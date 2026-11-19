@@ -1,0 +1,97 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#1746c9"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><title>YOUR HISAB</title>
+<style>
+:root{--b:#1746c9;--b2:#3b7bff;--ink:#0e1b3d;--bg:#eef3ff;--g:#12a150;--r:#d92d20;--m:#5b6785}
+*{box-sizing:border-box;margin:0}
+body{font:17px/1.4 system-ui,"Noto Sans Devanagari","Noto Sans Gujarati",sans-serif;background:var(--bg);color:var(--ink);-webkit-tap-highlight-color:transparent}
+header{background:linear-gradient(135deg,var(--b),var(--b2));color:#fff;padding:calc(env(safe-area-inset-top) + 12px) 14px 22px;border-radius:0 0 28px 28px;display:flex;align-items:center;gap:12px}
+header svg{width:48px;height:48px}header h1{font-size:22px}header small{color:#fff;opacity:.85}
+.bk{width:44px;height:44px;padding:0;margin:0;font-size:28px;background:#ffffff33;border-radius:50%}
+main{padding:14px 14px 40px;max-width:560px;margin:auto;animation:in .3s}
+@keyframes in{from{opacity:0;transform:translateY(10px)}}
+.card{background:#fff;border-radius:18px;padding:14px;margin-bottom:12px;box-shadow:0 4px 14px #1746c91f}
+button{font:inherit;font-weight:600;border:0;border-radius:14px;padding:15px;background:var(--b);color:#fff;width:100%;margin-bottom:12px;transition:transform .12s}
+button:active{transform:scale(.96)}
+.s{background:#dfe8ff;color:var(--b)}.d{background:#fde8e6;color:var(--r)}.x{width:auto;padding:8px 14px;margin:0;background:#dfe8ff;color:var(--b)}
+.big{font-size:20px;padding:20px;box-shadow:0 8px 20px #1746c940}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.grid button,.grid3 button{margin:0}
+.tile{display:flex;flex-direction:column;align-items:center;gap:6px;background:#fff;color:var(--ink);padding:22px 10px;box-shadow:0 4px 14px #1746c91f}.tile span{font-size:34px}
+.st{background:#fff;border-radius:16px;padding:10px;text-align:center}.st small{display:block;font-size:13px}.st b{font-size:17px}
+.hero{text-align:center}.hero b{display:block;font-size:34px;color:var(--b)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}.row:last-child{margin-bottom:0}
+.row2{display:grid;grid-template-columns:1fr 90px 46px;gap:8px;margin-bottom:8px}.row2 input{margin:0}
+input,select{font:inherit;width:100%;padding:13px;border:2px solid #d5deff;border-radius:12px;background:#fff;color:var(--ink);margin:4px 0 10px}
+label,small{color:var(--m);font-size:14px}h2{font-size:22px}h3{margin:6px 0 8px}
+.rd{color:var(--r)}.gn{color:var(--g)}.em{text-align:center;color:var(--m);padding:24px}
+.dt{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#e9f9ef;border-radius:12px;padding:10px 12px;margin-bottom:8px}.dt button{width:auto;padding:8px 12px;margin:0}.wr{background:#fff1d6}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;margin-top:8px}.cal i{font-style:normal;color:var(--m);font-size:13px}.cal u{text-decoration:none}
+.cal b{padding:10px 0;border-radius:12px;position:relative}.cal b.td{border:2px solid var(--b)}.cal b.sel{background:var(--b);color:#fff}
+.cal b.hs::after{content:"";position:absolute;left:50%;bottom:3px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--g)}
+.tot{background:var(--b);color:#fff}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,90px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:30px;transition:transform .25s;z-index:9}#toast.on{transform:translate(-50%,0)}
+@media print{header,button,input,select{display:none}body{background:#fff}.card{box-shadow:none;border:1px solid #ccc}.tot{color:#000;background:#fff}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body><div id="app"></div><div id="toast"></div>
+<script>
+const K='yourhisab_v1',$=i=>document.getElementById(i),pad=n=>String(n).padStart(2,'0');
+const Ds=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),today=()=>Ds(new Date());
+const T0=[["0.5 HP TP",50],["1 HP TP",50],["2 HP TP",50],["3 HP TP",50],["5 HP TP",50],["7.5 HP TP",80],["10 HP TP",100],["0.5 HP SP",70],["1 HP SP",70],["2 HP SP",70],["3 HP SP",70]];
+let S;try{S=JSON.parse(localStorage.getItem(K))}catch(e){}
+S=S||{c:[],t:T0.map(([n,r])=>({n,r})),e:[],p:[],l:'en'};
+const save=()=>localStorage.setItem(K,JSON.stringify(S)),uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const L={en:{cust:'Customers',cal:'Calendar',rep:'Reports',set:'Settings',work:'Add Work',addc:'Add Customer',name:'Name',phone:'Phone',save:'Save',del:'Delete',edit:'Edit',total:'Total Work',paid:'Paid',bal:'Balance',today:'Today',date:'Date',chg:'Change date',qty:'Qty',rate:'Rate',amt:'Amount',more:'+ Another motor',pay:'Add Payment',recd:'Payment received now',hist:'History',day:'Daily',mon:'Monthly',bycu:'Customer-wise',lang:'Language',bk:'Backup',rs:'Restore',rates:'Motor Rates',none:'Nothing here yet',sure:'Are you sure? This cannot be undone.',saved:'Saved ✓',print:'Print / PDF',pick:'Select customer'},
+hi:{cust:'ग्राहक',cal:'कैलेंडर',rep:'रिपोर्ट',set:'सेटिंग',work:'काम जोड़ें',addc:'ग्राहक जोड़ें',name:'नाम',phone:'फोन',save:'सेव करें',del:'मिटाएं',edit:'बदलें',total:'कुल काम',paid:'जमा',bal:'बाकी',today:'आज',date:'तारीख',chg:'तारीख बदलें',qty:'संख्या',rate:'भाव',amt:'रकम',more:'+ और मोटर',pay:'पेमेंट जोड़ें',recd:'अभी मिली रकम',hist:'इतिहास',day:'रोज़ का',mon:'महीने का',bycu:'ग्राहक अनुसार',lang:'भाषा',bk:'बैकअप',rs:'रीस्टोर',rates:'मोटर भाव',none:'अभी कुछ नहीं',sure:'पक्का? यह वापस नहीं होगा।',saved:'सेव हो गया ✓',print:'प्रिंट / PDF',pick:'ग्राहक चुनें'},
+gu:{cust:'ગ્રાહકો',cal:'કેલેન્ડર',rep:'રિપોર્ટ',set:'સેટિંગ',work:'કામ ઉમેરો',addc:'ગ્રાહક ઉમેરો',name:'નામ',phone:'ફોન',save:'સેવ કરો',del:'કાઢી નાખો',edit:'બદલો',total:'કુલ કામ',paid:'જમા',bal:'બાકી',today:'આજે',date:'તારીખ',chg:'તારીખ બદલો',qty:'સંખ્યા',rate:'ભાવ',amt:'રકમ',more:'+ બીજી મોટર',pay:'પેમેન્ટ ઉમેરો',recd:'હમણાં મળેલી રકમ',hist:'ઇતિહાસ',day:'રોજનું',mon:'મહિનાનું',bycu:'ગ્રાહક મુજબ',lang:'ભાષા',bk:'બેકઅપ',rs:'રીસ્ટોર',rates:'મોટર ભાવ',none:'હજુ કંઈ નથી',sure:'ખાતરી? આ પાછું નહીં આવે.',saved:'સેવ થયું ✓',print:'પ્રિન્ટ / PDF',pick:'ગ્રાહક પસંદ કરો'}};
+const LC={en:'en-IN',hi:'hi-IN',gu:'gu-IN'},t=k=>(L[S.l]||{})[k]||L.en[k]||k;
+const M=n=>'₹'+(Math.round(n*100)/100).toLocaleString('en-IN');
+const fd=s=>{const[y,m,d]=s.split('-');return new Date(y,m-1,d).toLocaleDateString(LC[S.l],{day:'numeric',month:'short',year:'numeric'})};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+const sum=(a,f)=>a.reduce((s,x)=>s+f(x),0),et=e=>e.q*e.r;
+const cs=(c,p='')=>{const E=S.e.filter(e=>e.c==c&&e.d.startsWith(p)),P=S.p.filter(x=>x.c==c&&x.d.startsWith(p)),w=sum(E,et),a=sum(P,x=>x.a);return{w,a,b:w-a,E,P}};
+const toast=m=>{const e=$('toast');e.textContent=m;e.className='on';setTimeout(()=>e.className='',1800)};
+const LG='<svg viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#fff"/><rect x="13" y="11" width="31" height="42" rx="5" fill="#1746c9"/><path d="M19 23h19M19 31h19M19 39h11" stroke="#fff" stroke-width="3" stroke-linecap="round"/><g transform="rotate(35 46 34)"><rect x="42.5" y="12" width="7" height="30" rx="2" fill="#f5a524"/><path d="M42.5 42h7l-3.5 8z" fill="#0e1b3d"/></g></svg>';
+let V='home',A=null,H=[],W,C={y:new Date().getFullYear(),m:new Date().getMonth(),s:today()},R={k:'d',d:'',m:''};
+const go=(v,a)=>{H.push([V,A]);V=v;A=a;draw()},back=()=>{const h=H.pop()||['home'];V=h[0];A=h[1];draw()};
+function draw(keep){document.documentElement.lang=S.l;$('app').innerHTML=`<header>${V!='home'?'<button class=bk onclick="back()">‹</button>':''}${LG}<div><h1>YOUR HISAB</h1><small>Hisab Kitab</small></div></header><main>`+({home,cust,cd,cf,work,cal,rep,set})[V]()+'</main>';if(V=='work'&&$('ls')){rl();rd()}if(!keep)scrollTo(0,0)}
+const st3=(w,a)=>`<div class=grid3><div class=st><small>${t('total')}</small><b>${M(w)}</b></div><div class=st><small>${t('paid')}</small><b class=gn>${M(a)}</b></div><div class=st><small>${t('bal')}</small><b class="${w-a>0?'rd':'gn'}">${M(w-a)}</b></div></div>`;
+function home(){const td=sum(S.e.filter(e=>e.d==today()),et);return `<div class="card hero"><small>${t('today')} · ${fd(today())}</small><b>${M(td)}</b></div>${st3(sum(S.e,et),sum(S.p,x=>x.a))}<button class=big onclick="nw()">＋ ${t('work')}</button><div class=grid>${[['cust','👥'],['cal','📅'],['rep','📊'],['set','⚙️']].map(([v,i])=>`<button class=tile onclick="go('${v}')"><span>${i}</span>${t(v)}</button>`).join('')}</div>`}
+function cust(){return `<button class=big onclick="go('cf')">＋ ${t('addc')}</button>`+(S.c.length?S.c.map(c=>{const s=cs(c.id);return `<div class="card row" onclick="go('cd','${c.id}')"><div><b>${esc(c.n)}</b><br><small>${esc(c.ph||'')}</small></div><b class="${s.b>0?'rd':'gn'}">${M(s.b)}</b></div>`}).join(''):`<p class=em>${t('none')}</p>`)}
+function cf(){const c=S.c.find(x=>x.id==A)||{};return `<div class=card><label>${t('name')}</label><input id=n value="${esc(c.n||'')}"><label>${t('phone')}</label><input id=ph type=tel value="${esc(c.ph||'')}"><button onclick="sc()">${t('save')}</button></div>`}
+function sc(){const n=$('n').value.trim();if(!n)return $('n').focus();if(A){const c=S.c.find(x=>x.id==A);c.n=n;c.ph=$('ph').value}else S.c.push({id:uid(),n,ph:$('ph').value});save();toast(t('saved'));back()}
+function cd(){const c=S.c.find(x=>x.id==A);if(!c)return '';const s=cs(c.id);
+const hl=[...s.E.map(e=>({d:e.d,k:'e',id:e.id,x:`${esc(e.n)} × ${e.q} @ ${M(e.r)}`,a:et(e)})),...s.P.map(p=>({d:p.d,k:'p',id:p.id,x:t('paid'),a:p.a}))].sort((a,b)=>b.d.localeCompare(a.d));
+return `<div class=card><h2>${esc(c.n)}</h2><small>${esc(c.ph||'')}</small></div>${st3(s.w,s.a)}<button class=big onclick="nw('${c.id}')">＋ ${t('work')}</button><div class=grid><button class=s onclick="pay('${c.id}')">💵 ${t('pay')}</button><button class=s onclick="go('cf','${c.id}')">✏️ ${t('edit')}</button></div><div id=pf></div><h3>${t('hist')}</h3>`+(hl.length?hl.map(h=>`<div class="card row"><div><small>${fd(h.d)}</small><div>${h.x}</div></div><div class=row><b class="${h.k=='p'?'gn':''}">${h.k=='p'?'+':''}${M(h.a)}</b><button class=x onclick="dl('${h.k}','${h.id}')">✕</button></div></div>`).join(''):`<p class=em>${t('none')}</p>`)+`<button class=d onclick="dc('${c.id}')">🗑 ${t('del')}</button>`}
+function pay(id){$('pf').innerHTML=`<div class=card><label>${t('date')}: <b>${t('today')} · ${fd(today())}</b></label><input id=pa type=number inputmode=decimal placeholder="₹"><button onclick="sp('${id}')">${t('save')}</button></div>`;$('pa').focus()}
+function sp(id){const a=+$('pa').value;if(!(a>0))return $('pa').focus();S.p.push({id:uid(),c:id,d:today(),a});save();draw(1);toast(t('saved'))}
+function dl(k,id){if(!confirm(t('sure')))return;if(k=='e')S.e=S.e.filter(x=>x.id!=id);else S.p=S.p.filter(x=>x.id!=id);save();draw(1)}
+function dc(id){if(!confirm(t('sure')))return;S.c=S.c.filter(x=>x.id!=id);S.e=S.e.filter(x=>x.c!=id);S.p=S.p.filter(x=>x.c!=id);save();back()}
+const ln=()=>({n:(S.t[0]||{}).n||'',q:1,r:(S.t[0]||{}).r||0});
+function nw(c){W={c:c||'',d:today(),m:0,L:[ln()],a:''};go('work')}
+function work(){if(!S.c.length)return `<p class=em>${t('none')}</p><button class=big onclick="go('cf')">＋ ${t('addc')}</button>`;
+return `<div class=card><label>${t('pick')}</label><select id=wc onchange="W.c=this.value"><option value="">—</option>${S.c.map(c=>`<option value="${c.id}" ${c.id==W.c?'selected':''}>${esc(c.n)}</option>`).join('')}</select><div id=wd></div></div><div id=ls></div><button class=s onclick="W.L.push(ln());rl()">${t('more')}</button><div class=card><label>${t('recd')}</label><input type=number inputmode=decimal oninput="W.a=+this.value" value="${W.a||''}"></div><div class="card row"><b>${t('amt')}</b><b id=tt></b></div><button class=big id=sv onclick="sw()"></button>`}
+function rd(){const o=W.d==today();$('wd').innerHTML=`<div class="dt ${o?'':'wr'}"><span>📅 ${o?t('today')+' · ':''}<b>${fd(W.d)}</b></span><button class=s onclick="$('dp').hidden=0">${t('chg')}</button></div><input id=dp type=date hidden value="${W.d}" max="${today()}" onchange="W.d=this.value||today();W.m=W.d==today()?0:1;rd()">`;$('sv').textContent=t('save')+' · '+fd(W.d)}
+const ty=(i,v)=>{W.L[i].n=v;W.L[i].r=(S.t.find(x=>x.n==v)||{}).r||0;rl()};
+function rl(){$('ls').innerHTML=W.L.map((l,i)=>`<div class=card><div class=row><select onchange="ty(${i},this.value)">${S.t.map(x=>`<option ${x.n==l.n?'selected':''}>${esc(x.n)}</option>`).join('')}</select>${W.L.length>1?`<button class=x onclick="W.L.splice(${i},1);rl()">✕</button>`:''}</div><div class=grid><div><label>${t('qty')}</label><input type=number inputmode=numeric min=1 value="${l.q}" oninput="W.L[${i}].q=+this.value;ct()"></div><div><label>${t('rate')} ₹</label><input type=number inputmode=decimal value="${l.r}" oninput="W.L[${i}].r=+this.value;ct()"></div></div><div class=row><small>${t('amt')}</small><b id=lt${i}></b></div></div>`).join('');ct()}
+function ct(){W.L.forEach((l,i)=>$('lt'+i).textContent=M(l.q*l.r));$('tt').textContent=M(sum(W.L,l=>l.q*l.r))}
+function sw(){if(!W.c){$('wc').focus();return toast(t('pick'))}const ok=W.L.filter(l=>l.q>0&&l.r>=0&&l.n);if(!ok.length)return toast(t('qty'));const d=W.m?W.d:today();
+ok.forEach(l=>S.e.push({id:uid(),c:W.c,d,n:l.n,q:l.q,r:l.r}));if(W.a>0)S.p.push({id:uid(),c:W.c,d,a:W.a});save();toast(t('saved'));back()}
+function tbl(p,det){let w2=0,a2=0;const r=S.c.map(c=>{const s=cs(c.id,p);if(!s.E.length&&!s.P.length)return '';w2+=s.w;a2+=s.a;return `<div class=card><div class=row><b>${esc(c.n)}</b><b>${M(s.w)}</b></div>${det?s.E.map(e=>`<div class=row><small>${esc(e.n)} × ${e.q} @ ${e.r}</small><small>${M(et(e))}</small></div>`).join(''):''}<div class=row><small class=gn>${t('paid')} ${M(s.a)}</small><small class="${s.b>0?'rd':'gn'}">${t('bal')} ${M(s.b)}</small></div></div>`}).join('');
+return (r||`<p class=em>${t('none')}</p>`)+`<div class="card tot"><div class=row><span>${t('total')}</span><b>${M(w2)}</b></div><div class=row><span>${t('paid')}</span><b>${M(a2)}</b></div><div class=row><span>${t('bal')}</span><b>${M(w2-a2)}</b></div></div>`}
+const cm=n=>{const d=new Date(C.y,C.m+n,1);C.y=d.getFullYear();C.m=d.getMonth();draw(1)};
+function cal(){const f=new Date(C.y,C.m,1),n=new Date(C.y,C.m+1,0).getDate(),lc=LC[S.l],has=new Set(S.e.map(e=>e.d));
+const g=Array.from({length:7},(_,i)=>`<i>${new Date(2023,0,1+i).toLocaleDateString(lc,{weekday:'narrow'})}</i>`).join('')+'<u></u>'.repeat(f.getDay())+Array.from({length:n},(_,i)=>{const d=Ds(new Date(C.y,C.m,i+1));return `<b class="${d==C.s?'sel':''} ${d==today()?'td':''} ${has.has(d)?'hs':''}" onclick="C.s='${d}';draw(1)">${i+1}</b>`}).join('');
+return `<div class=card><div class=row><button class=x onclick="cm(-1)">‹</button><b>${f.toLocaleDateString(lc,{month:'long',year:'numeric'})}</b><button class=x onclick="cm(1)">›</button></div><div class=cal>${g}</div></div><h3>${fd(C.s)}</h3>`+tbl(C.s,1)}
+function rep(){const d=R.d||today(),m=R.m||today().slice(0,7);const tabs=[['d','day'],['m','mon'],['c','bycu']].map(([k,l])=>`<button class="${R.k==k?'':'s'}" onclick="R.k='${k}';draw(1)">${t(l)}</button>`).join('');
+const inp=R.k=='d'?`<input type=date value="${d}" onchange="R.d=this.value;draw(1)">`:R.k=='m'?`<input type=month value="${m}" onchange="R.m=this.value;draw(1)">`:'';
+return `<div class=grid3>${tabs}</div>${inp}<h3>${R.k=='d'?fd(d):R.k=='m'?m:t('bycu')}</h3>`+tbl(R.k=='d'?d:R.k=='m'?m:'',R.k=='d')+`<button class=s onclick="print()">🖨 ${t('print')}</button>`}
+function set(){return `<div class=card><label>${t('lang')}</label><div class=grid3>${[['en','English'],['hi','हिन्दी'],['gu','ગુજરાતી']].map(([k,n])=>`<button class="${S.l==k?'':'s'}" onclick="S.l='${k}';save();draw(1)">${n}</button>`).join('')}</div></div><div class=card><h3>${t('rates')}</h3>${S.t.map((x,i)=>`<div class=row2><input value="${esc(x.n)}" onchange="S.t[${i}].n=this.value.trim()||S.t[${i}].n;save()"><input type=number inputmode=decimal value="${x.r}" onchange="S.t[${i}].r=+this.value;save()"><button class=x onclick="dt(${i})">✕</button></div>`).join('')}<div class=row2><input id=tn placeholder="1 HP TP"><input id=tr type=number inputmode=decimal placeholder="₹"><button class=x onclick="at()">＋</button></div></div><div class=grid><button onclick="bk()">⬇ ${t('bk')}</button><button class=s onclick="$('rf').click()">⬆ ${t('rs')}</button></div><input id=rf type=file accept=".json" hidden onchange="rs(this)">`}
+function dt(i){if(!confirm(t('sure')))return;S.t.splice(i,1);save();draw(1)}
+function at(){const n=$('tn').value.trim();if(!n)return $('tn').focus();S.t.push({n,r:+$('tr').value||0});save();draw(1)}
+function bk(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='yourhisab-backup-'+today()+'.json';a.click();toast(t('saved'))}
+function rs(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.c||!d.e||!d.p||!d.t)throw 0;if(!confirm(t('sure')))return;S=d;save();draw(1);toast(t('saved'))}catch(e){toast('✕ File')}};r.readAsText(f)}
+let day=today();const chk=()=>{const n=today();if(n==day)return;day=n;C={y:+n.slice(0,4),m:+n.slice(5,7)-1,s:n};if(V=='work'&&$('wd')){if(!W.m){W.d=n;rd()}}else draw(1)};
+setInterval(chk,15000);document.addEventListener('visibilitychange',chk);addEventListener('focus',chk);
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
+draw();
+</script></body></html>
